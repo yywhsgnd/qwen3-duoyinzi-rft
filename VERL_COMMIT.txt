@@ -1,0 +1,12 @@
+# veRL 框架版本信息
+# 本项目基于 veRL 框架完成训练，以下为使用的版本信息（从项目文件时间戳推断）
+
+veRL GitHub: https://github.com/volcengine/verl
+Estimated Version: verl 0.4.x - 0.5.x (2025 Q3-Q4)
+Python: 3.10+
+PyTorch: 2.4.0+
+Transformers: 4.44.0+
+vLLM: 0.7.0+ (V1 engine)
+Ray: 2.37.0+
+
+# 具体 commit hash 因训练环境不可用未确认，请参考项目目录中 veRL 源码的 git log

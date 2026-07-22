@@ -1,0 +1,56 @@
+# 密钥和环境变量
+.env
+*.key
+*.pem
+*secret*
+
+# API Keys 和 Token
+*WANDB_API_KEY*
+*API_KEY*
+*SECRET*
+*TOKEN*
+
+# 模型检查点
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+checkpoint*/
+output*/
+outputs*/
+merged_models/
+
+# 数据（如果包含受限内容）
+*.parquet
+!examples/*.parquet
+!examples/*.jsonl
+
+# 日志
+logs/
+*.log
+!results/**/*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# veRL 源码（通过 requirements.txt 安装）
+verl/
+recipe/
+
+# 大型结果文件
+*.html
+!reports/*.html

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>hanyuda Bad Case 标签质量分析</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",sans-serif;background:#f1f5f9;color:#1e293b;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:6px}
+h2{font-size:16px;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid #3b82f6}
+.subtitle{color:#64748b;font-size:13px;margin-bottom:16px}
+p{margin:6px 0;font-size:13px}
+.stats{background:#f8fafc;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:13px}
+.stats td{padding:2px 12px 2px 0}
+details{margin:4px 0}
+summary:hover{color:#2563eb}
+</style>
+</head>
+<body>
+<h1>hanyuda 测试集 Bad Case 标签质量分析</h1>
+<div class="subtitle">基于 DeepSeek V4 Flash 三次独立判断（temperature=0）| 仅用于辅助分析，不作为 Ground Truth</div>
+
+<div class="stats">
+<h3>审计统计</h3>
+<table>
+<tr><td>审计样本数</td><td><b>644</b>（both_wrong 样本）</td></tr>
+<tr><td>DS三次一致</td><td><b>582</b>（90.4%）</td></tr>
+<tr><td>DS三次不一致</td><td><b>62</b>（9.6%）</td></tr>
+<tr><td>一致且与原GT冲突（高置信疑似错标）</td><td><b>417</b>（71.6% of 一致样本）</td></tr>
+<tr><td>一致且与原GT一致</td><td><b>165</b></td></tr>
+</table>
+</div>
+
+<p style="color:#b45309;background:#fffbeb;padding:8px 12px;border-radius:6px;font-size:13px">
+⚠️ <b>注意</b>：DeepSeek 分析仅用于识别标签中可能存在的噪声，不替代人工 Ground Truth。
+本报告不报告基于 DeepSeek 校正后的准确率。
+</p>
+
+
+<h2>1. 高置信标签冲突（DS三次一致但与原GT不同）</h2>
+<p>共 417 条，展示 5 条代表性案例：</p>
+
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#1</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>行</b>（第4字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>躬耕与行役</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>平声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 4 个字 '行' 的平仄。
+
+全诗上下文：
+郭外纵横亩
+秋田远近山
+三农方待穫
+一雁下庾关
+似诉风霜苦
+焉知稼穑艰
+【躬耕与行役】 <-- 目标诗句
+相视未能閒
+
+参考资料：
+行字释义：
+
+【平声】
+1. 道路。
+2. 路程。
+3. 道理。
+4. 事物的发展规律。
+5. 行走。
+6. (车船)行驶。
+7. 运行。
+8. 围棋下子。
+9. 疏通，疏浚。
+10. 流动。
+11. 流通。
+12. 流行。
+13. 流传。
+14. 传布。
+15. 散布。
+16. 斟酒。
+17. 出游。
+18. 行装。
+19. 去。
+20. 离开。
+21. 引申为去世。
+22. 葬。
+23. 出嫁。
+24. 前往。
+25. 返还。
+26. 经历。
+27. 做。
+28. 从事某种活动。
+29. 行动。
+30. 实施。
+31. 使用。
+32. 行使。
+33. 赏赐。
+34. 给予。
+35. 兼摄官职。
+36. 能干。
+37. 可以。
+38. 将，将要。
+39. 又，也，再。
+40. 辄。
+41. 正。
+42. 方。
+43. 乐曲。
+44. 古诗的一种体裁。
+45. 汉字...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#2</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>荫</b>（第7字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>鹿养茸群选嘉荫</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>平声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 7 个字 '荫' 的平仄。
+
+全诗上下文：
+意入山边复水边
+最无尘处总真诠
+风来万树吹凉籁
+雨过千峰生霁烟
+【鹿养茸群选嘉荫】 <-- 目标诗句
+鹤将子各下苍川
+分明不是松乔侣
+到此还应自谓仙
+
+参考资料：
+荫字释义：
+
+【平声】
+1. 树荫。
+2. 日影。
+3. “荫”的简化字。
+
+【仄声】
+1. 屏蔽。
+2. 引申为庇护。
+3. 封建时代，因祖先有勋劳或官职高而循例受封、得官。
+4. 地窖。
+5. 没有阳光。
+6. 又凉又潮。
+7. 遮盖。
+8. 隐蔽。
+9. 庇荫。
+10. 封建时代子孙因先世有功劳而得到封赏或免罪。
+11. 地窖或暗室。
+12. “荫”的简化字。
+
+请根据诗句上下文语义及参考资料判断此处"荫"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#3</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>听</b>（第6字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>岩下朝阴俯听雷</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>平声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 6 个字 '听' 的平仄。
+
+全诗上下文：
+身逐南舟去不回
+匡庐留滞得徘徊
+峰头夜宿平看斗
+【岩下朝阴俯听雷】 <-- 目标诗句
+西顾波涛浮日月
+东归天地入尘埃
+何时得遂幽栖志
+常把韦编静处开
+
+参考资料：
+听字释义：
+
+【平声】
+1. “听”的简化字。
+2. “听”的简化字。
+3. 以耳受声。
+4. 听从，接受。
+5. 审察。
+6. 断决。
+7. 治理。
+8. 耳目，间谍。
+9. 等候，等待。
+10. 耳朵。
+11. 美名善誉。
+12. 打牌时整副牌基本凑齐，只等最后一张即可和牌的状态。
+13. 厅堂。
+14. 马口铁罐。
+15. 听凭，任凭。
+
+【仄声】
+1. 笑貌。
+
+请根据诗句上下文语义及参考资料判断此处"听"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#4</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>看</b>（第5字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>提壶醒眼看人醉</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>仄声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 5 个字 '看' 的平仄。
+
+全诗上下文：
+旋作东陂已水声
+才经急雨恰新晴
+【提壶醒眼看人醉】 <-- 目标诗句
+布谷催农不自耕
+一似老夫堪笑死
+万方口业拙谋生
+嘲红侮绿成何事
+自古诗人没十成
+
+参考资料：
+看字释义：
+
+【平声】
+1. 守护。
+2. 看守。
+3. 监视。
+4. 看押。
+
+【仄声】
+1. 探望。
+2. 问候。
+3. 以视线接触人或事物。
+4. 观察。
+5. 估量。
+6. 对待。
+7. 看待。
+8. 款待。
+9. 照料。
+10. 料理。
+11. 备办。
+12. 观赏。
+13. 赏玩。
+14. 诊视疾病。
+15. 请医生治病。
+16. 拣。
+17. 选择。
+18. 听见。
+19. 闻听。
+20. 取决。
+21. 提醒对方小心、注意之词。
+22. 提防。
+23. 用在动词或动词结构后面。
+24. 先试试之意。
+
+请根据诗句上下文语义及参考资料判断此处"看"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#5</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>胜</b>（第3字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>香湿胜含露</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>仄声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 3 个字 '胜' 的平仄。
+
+全诗上下文：
+若道春无赖
+飞花合逐风
+巧知人意里
+解入酒杯中
+【香湿胜含露】 <-- 目标诗句
+光摇似泛空
+请君回首看
+几片舞芳丛
+
+参考资料：
+胜字释义：
+
+【平声】
+1. 容量单位。
+2. 伸展。
+3. 肽。
+4. 一种有机化合物。
+5. “胜”的简化字。
+6. 瘦。
+
+【仄声】
+1. 能够承受，禁得起。
+2. 尽。
+3. 陵，欺凌。
+4. 战胜。
+5. 胜利。
+6. 胜过，超过。
+7. 克制。
+8. 制服。
+9. 被灭亡的。
+10. 、“胜朝”。
+11. 事物优越、美好。
+12. 特指优美的山水或古迹。
+13. 兴盛。
+14. 旺盛。
+15. 颂。
+16. 相称，相符。
+17. 相积。
+18. 古代妇女首饰。
+19. 门窗、屏风的装饰物。
+20. “胜”的简化字。
+21. “胜”的简化字。
+
+请根据诗句上下文语义及参考资料判断此处"胜"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+
+<h2>2. DS三次一致且与原GT相同（模型和标签一致，可能是真错误）</h2>
+<p>共 165 条，展示 5 条：</p>
+
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#1</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>调</b>（第3字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>散发调金奏</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>平声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 3 个字 '调' 的平仄。
+
+全诗上下文：
+农野希时雨
+閒居自素风
+落霞山向背
+鸣犊水西东
+【散发调金奏】 <-- 目标诗句
+抽毫想雪宫
+道心休远鹜
+北郭有崆峒
+
+参考资料：
+调字释义：
+
+【平声】
+1. 协调。
+2. 使协调。
+3. 适合，符合。
+4. 调和。
+5. 调配。
+6. 调停使和解。
+7. 、“调处”。
+8. 调试。
+9. 调弄。
+10. 演奏。
+11. 调剂。
+12. 调理，调养。
+13. 治理。
+14. 驯养，训练。
+15. 驯顺。
+16. 戏弄。
+17. 嘲笑。
+18. 挑逗。
+19. 逗引。
+20. 挑拨，挑唆。
+21. 、“调唆”。
+22. 欺骗。
+23. 抛掷，扔。
+24. “调”的简化字。
+25. 朝，早晨。
+26. “调”的简化字。
+
+【仄声】
+1. 戏曲和歌曲的乐律。
+2. 调子。
+3. 诗的韵律、气韵。
+4. 人的志向，志趣。
+5. 才情，才调。
+6. 说话、读书等的腔调。
+7. 语音上的声调。
+8. 言辞。
+9. 选调。
+10. 迁转。
+11. 更动(工作、位置)。
+12. 征调，征发。
+13. 转动。
+...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#2</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>长</b>（第5字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>广亩同看长翠荄</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>仄声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 5 个字 '长' 的平仄。
+
+全诗上下文：
+霖雨苍生素有怀
+天心昭格众心谐
+虚檐坐使翻银竹
+【广亩同看长翠荄】 <-- 目标诗句
+云暗蛟龙归远海
+水高鱼鳖上长街
+朝来送喜千家遍
+却道先生语类俳
+
+参考资料：
+长字释义：
+
+【平声】
+1. 在空间的两端之间距离大。
+2. 时间相隔距离大。
+3. 长久。
+4. 永久。
+5. 常常。
+6. 经常。
+7. 引长，延长。
+8. 超越。
+9. 特长。
+10. 擅长。
+11. 长处，优点。
+12. 优。
+13. 是，正确。
+14. 引申为赞许。
+15. 大。
+16. 程度。
+17. 、“长哭”。
+18. 中国古代东方少数民族之一。
+19. 姓。
+20. 春秋卫有长牂。
+21. “长”的简化字。
+
+【仄声】
+1. 相比之下年纪大。
+2. 相比之下年纪较大的人。
+3. 特指老，年高。
+4. 老人。
+5. 为人师长。
+6. 长辈，辈分高的人。
+7. 排行最大。
+8. 、“长女”。
+9. 居先，居首位。
+10. 居先、居首位者。
+11. 君长。
+12. 领袖。
+13. 首领。
+14. 长官。
+15. 今称领导人...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#3</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>为</b>（第2字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>且为青山一倚楼</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>仄声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 2 个字 '为' 的平仄。
+
+全诗上下文：
+村居邀客惭供给
+【且为青山一倚楼】 <-- 目标诗句
+十里沙平遥对酒
+百年地迥更逢秋
+城中车马何人到
+水曲风烟尽日留
+无柰天涯归思切
+孤帆八月下长洲
+
+参考资料：
+为字释义：
+
+【平声】
+1. “为”的简化字。
+2. 做。
+3. 干。
+4. 特指服劳役之事。
+5. 造作。
+6. 制作。
+7. 制定，订立。
+8. 治理。
+9. 做出。
+10. 装出。
+11. 举行。
+12. 施行。
+13. 陈设。
+14. 设置。
+15. 医治。
+16. 学习。
+17. 研究。
+18. 撰写。
+19. 绘画。
+20. 雕刻。
+21. 吟唱。
+22. 演奏。
+23. 栽种，种植。
+24. 精选。
+25. 选择。
+26. 穿，着。
+27. 求取。
+28. 赐与。
+29. 给与。
+30. 有。
+31. 充当。
+32. 担任。
+33. 当作。
+34. 用。
+35. 使用。
+36. 变成。
+37. 长成。
+38. 成熟。
+39. 成长。
+40. 算是。
+41. 算作。
+42. 是。
+43. 如同。
+44. 好像。
+45. 归...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#4</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>间</b>（第6字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>今代一人真间世</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>仄声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 6 个字 '间' 的平仄。
+
+全诗上下文：
+六幕纷纷启瑞篇
+非烟深处下芝軿
+穆王扰扰不谋治
+武帝区区空学仙
+【今代一人真间世】 <-- 目标诗句
+昔时五老与疑年
+欢呼亦有南山颂
+谁解吹嘘上九天
+
+参考资料：
+间字释义：
+
+【平声】
+1. “间”的繁体字。
+2. “间”的简化字。
+
+【仄声】
+1. “间”的繁体字。
+2. “间”的简化字。
+
+请根据诗句上下文语义及参考资料判断此处"间"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#5</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>禁</b>（第4字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>白眼谁禁狂阮辱</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>✅ 是</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>平声</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 4 个字 '禁' 的平仄。
+
+全诗上下文：
+几见颠风杀草莱
+人间筑遍赧王台
+绝无归宿长河下
+少有腥膻众蚁来
+【白眼谁禁狂阮辱】 <-- 目标诗句
+赭衣空使腐迁哀
+犨麋虽丑犹完相
+可惜陈平魏倩材
+
+参考资料：
+禁字释义：
+
+【平声】
+1. 胜任。
+2. 忍受。
+3. 可能。
+4. 乐意。
+5. 与“不”结合，用在消极意义的词后面。
+6. 程度深。
+7. 耐。
+8. 经得起。
+9. 相当。
+10. 抵得上。
+11. 遭遇。
+12. 牵缠。
+13. 缠磨。
+14. 自持。
+15. 控制。
+16. 整治。
+17. 处置。
+18. 折磨，使受苦。
+19. 带。
+
+【仄声】
+1. 禁止。
+2. 制止。
+3. 含有禁戒性的规条及法令。
+4. 牵制。
+5. 约束。
+6. 禁忌。
+7. 禁忌的事项。
+8. 忌讳。
+9. 监禁。
+10. 拘禁。
+11. 关押囚犯的处所。
+12. 监狱。
+13. 用以防卫、封闭、阻隔、屏蔽的设施。
+14. 阻止。
+15. 限制。
+16. 特指围养禽兽的牢圈。
+17. 王宫门卫。
+18. 帝王宫殿。
+19. 御用的。
+20. 属...</pre>
+        </details>
+    </div>
+
+<h2>3. DS三次不一致（需人工判断）</h2>
+<p>共 62 条，展示 5 条：</p>
+
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#1</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>听</b>（第5字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>解将真见听飞埃</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 平声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>❌ 否</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>nan</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 5 个字 '听' 的平仄。
+
+全诗上下文：
+昔闻火里莲能长
+今见莲从陆地栽
+广叶祗冯圆性转
+粗花全借法身开
+丛摇宝鬘风中去
+气绕梅檀雨后来
+试问集观谁具眼
+【解将真见听飞埃】 <-- 目标诗句
+
+参考资料：
+听字释义：
+
+【平声】
+1. “听”的简化字。
+2. “听”的简化字。
+3. 以耳受声。
+4. 听从，接受。
+5. 审察。
+6. 断决。
+7. 治理。
+8. 耳目，间谍。
+9. 等候，等待。
+10. 耳朵。
+11. 美名善誉。
+12. 打牌时整副牌基本凑齐，只等最后一张即可和牌的状态。
+13. 厅堂。
+14. 马口铁罐。
+15. 听凭，任凭。
+
+【仄声】
+1. 笑貌。
+
+请根据诗句上下文语义及参考资料判断此处"听"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#2</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>干</b>（第4字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>祗望息干戈</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>❌ 否</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>nan</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 4 个字 '干' 的平仄。
+
+全诗上下文：
+古庙积烟萝
+威灵及物多
+因知曹孟德
+争奈此公何
+树古雷痕剥
+碑荒篆画讹
+今朝冥祷祝
+【祗望息干戈】 <-- 目标诗句
+
+参考资料：
+干字释义：
+
+【平声】
+1. 没有水分或水分很少。
+2. 使失去水分。
+3. 不用水的。
+4. 、“干浴”。
+5. 加工制成的干的食品。
+6. 如饼干、葡萄干。
+7. 空虚。
+8. 竭尽。
+9. 徒然，白白地。
+10. 没来由。
+11. 有名无实的。
+12. 名义上的。
+13. 声音清脆响亮。
+14. 书法用语。
+15. 行墨失去光泽。
+16. 当面说气话使人难堪。
+17. 慢待，冷落。
+18. 无水分或水分很少。
+19. 与“湿”相对。
+20. 用天干(即甲、乙、丙、丁、戊、己、庚、辛、壬、癸)纪日的总称。
+21. 盾牌。
+22. 求。
+23. 请求。
+24. 干犯。
+25. 冲犯。
+26. 干扰。
+27. 干谒。
+28. 干涉。
+29. 干预。
+30. 关涉。
+31. 招惹。
+32. 招致。
+33. 岸，水边。
+34. 两山间的流水。
+35. 治理。
+36. 空...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#3</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>为</b>（第6字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>既出不应犹为我</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>❌ 否</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>nan</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 6 个字 '为' 的平仄。
+
+全诗上下文：
+十年门巷断经过
+读易吟诗长薜萝
+始向新春歌伐木
+忽逢佳士赴卷阿
+面如吕叟精神王
+身似章公贵气多
+【既出不应犹为我】 <-- 目标诗句
+未知贤者意如何
+
+参考资料：
+为字释义：
+
+【平声】
+1. “为”的简化字。
+2. 做。
+3. 干。
+4. 特指服劳役之事。
+5. 造作。
+6. 制作。
+7. 制定，订立。
+8. 治理。
+9. 做出。
+10. 装出。
+11. 举行。
+12. 施行。
+13. 陈设。
+14. 设置。
+15. 医治。
+16. 学习。
+17. 研究。
+18. 撰写。
+19. 绘画。
+20. 雕刻。
+21. 吟唱。
+22. 演奏。
+23. 栽种，种植。
+24. 精选。
+25. 选择。
+26. 穿，着。
+27. 求取。
+28. 赐与。
+29. 给与。
+30. 有。
+31. 充当。
+32. 担任。
+33. 当作。
+34. 用。
+35. 使用。
+36. 变成。
+37. 长成。
+38. 成熟。
+39. 成长。
+40. 算是。
+41. 算作。
+42. 是。
+43. 如同。
+44. 好像。
+45. 归...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#4</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>缝</b>（第2字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>旗缝雁翅如竿袅</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">平声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 平声</span> / 
+                    <span style="color:#8b5cf6">Run2: 仄声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>❌ 否</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>nan</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 2 个字 '缝' 的平仄。
+
+全诗上下文：
+剑光如电马如风
+百捷长轻是掌中
+无定河边蕃将死
+受降城外虏尘空
+【旗缝雁翅如竿袅】 <-- 目标诗句
+箭撚雕翎逐隼雄
+自指燕山最高石
+不知谁为勒殊功
+
+参考资料：
+缝字释义：
+
+【平声】
+1. 用针线连缀。
+2. 补合。
+3. “缝”的简化字。
+
+【仄声】
+1. 缝合的地方。
+2. 空隙。
+3. 裂缝。
+4. “缝”的简化字。
+
+请根据诗句上下文语义及参考资料判断此处"缝"字应该读平声还是仄声？不要考虑整句诗的格律规则...</pre>
+        </details>
+    </div>
+    <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:10px 0;background:#fff">
+        <div style="font-size:13px;color:#64748b;margin-bottom:6px">#5</div>
+        <table style="font-size:13px">
+            <tr><td style="color:#64748b;width:70px">目标字</td><td><b>为</b>（第2字）</td></tr>
+            <tr><td style="color:#64748b">目标句</td><td>一为呼曾子</td></tr>
+            <tr><td style="color:#64748b">原始标签</td><td style="font-weight:bold">仄声</td></tr>
+            <tr><td style="color:#64748b">DS 三次</td>
+                <td><span style="color:#3b82f6">Run1: 仄声</span> / 
+                    <span style="color:#8b5cf6">Run2: 平声</span> / 
+                    <span style="color:#ec4899">Run3: 仄声</span></td></tr>
+            <tr><td style="color:#64748b">DS 一致</td><td>❌ 否</td></tr>
+            <tr><td style="color:#64748b">DS 多数</td><td>nan</td></tr>
+        </table>
+        <details style="margin-top:8px">
+            <summary style="cursor:pointer;color:#3b82f6;font-size:12px">📋 完整 Prompt（前500字符）</summary>
+            <pre style="white-space:pre-wrap;font-size:11px;background:#f8fafc;padding:8px;
+                       border-radius:4px;max-height:200px;overflow-y:auto;margin-top:4px">请分析以下全诗中，目标诗句（已用【】标出）里第 2 个字 '为' 的平仄。
+
+全诗上下文：
+蚤春从一别
+别绪近何如
+昨日闻人语
+喜君能读书
+延年遵服气
+过夏善防虚
+【一为呼曾子】 <-- 目标诗句
+新诗祈寄予
+
+参考资料：
+为字释义：
+
+【平声】
+1. “为”的简化字。
+2. 做。
+3. 干。
+4. 特指服劳役之事。
+5. 造作。
+6. 制作。
+7. 制定，订立。
+8. 治理。
+9. 做出。
+10. 装出。
+11. 举行。
+12. 施行。
+13. 陈设。
+14. 设置。
+15. 医治。
+16. 学习。
+17. 研究。
+18. 撰写。
+19. 绘画。
+20. 雕刻。
+21. 吟唱。
+22. 演奏。
+23. 栽种，种植。
+24. 精选。
+25. 选择。
+26. 穿，着。
+27. 求取。
+28. 赐与。
+29. 给与。
+30. 有。
+31. 充当。
+32. 担任。
+33. 当作。
+34. 用。
+35. 使用。
+36. 变成。
+37. 长成。
+38. 成熟。
+39. 成长。
+40. 算是。
+41. 算作。
+42. 是。
+43. 如同。
+44. 好像。
+45. 归于。
+46. 属于。
+47. 使...</pre>
+        </details>
+    </div>
+
+
+</body>
+</html>

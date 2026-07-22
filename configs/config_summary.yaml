@@ -1,0 +1,72 @@
+# ============================================================
+# Qwen3-8B 古诗多音字平仄消歧 — 训练配置汇总
+# ============================================================
+
+base_model: "Qwen/Qwen3-8B"
+training_framework: "veRL"
+rl_algorithm: "GRPO"
+
+# Reward Function
+reward:
+  type: "rule-based"
+  levels: 3
+  scoring:
+    correct_format_and_answer: 1
+    correct_format_wrong_answer: 0
+    unparseable_format: -1
+  reward_manager: "prime"
+  async_workers: 64
+
+# Model Configuration
+model:
+  dtype: "bfloat16"
+  gradient_checkpointing: true
+  trust_remote_code: true
+  remove_padding: true
+
+# Training Hyperparameters
+training:
+  gpus: 3
+  learning_rate: 1.0e-6
+  batch_size: 504
+  ppo_mini_batch_size: 252
+  ppo_micro_batch_size_per_gpu: 12
+  ppo_epochs: 4
+  max_prompt_length: 1500
+  max_response_length: 2048
+  kl_coef: 0.0005
+  kl_type: "low_var_kl"
+  critic_warmup: 5
+  save_freq: 30
+  test_freq: 30
+  dynamic_batch_size: true
+
+# Rollout Configuration
+rollout:
+  engine: "vllm"
+  n_samples: 4  # GRPO group size
+  temperature: 0.8
+  top_p: 0.95
+  dtype: "bfloat16"
+  gpu_memory_utilization: 0.7
+  tensor_model_parallel_size: 1
+
+# Evaluation Configuration
+evaluation:
+  engine: "vllm"
+  temperature: 0.0  # greedy decoding
+  top_p: 1.0
+  max_tokens: 2048
+
+# Dataset
+dataset:
+  train: "~50,000 samples (full-poem context)"
+  valid: "~6,000 samples"
+  test:
+    hanyuda: 6000
+    unzidian: 6000
+    aa: 30
+  split_method: "stratified 8:1:1"
+  random_state: 42
+  ping_ratio: 65.6
+  ze_ratio: 34.4

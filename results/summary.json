@@ -1,0 +1,70 @@
+{
+  "project": "Qwen3-8B古诗多音字平仄消歧",
+  "note": "所有主结果均使用原始测试标签，未使用DeepSeek结果修改Ground Truth。有效样本Accuracy和Macro-F1仅在成功解析为平声或仄声的样本上计算；严格端到端Accuracy使用全部测试样本作为分母，Parse Fail按错误计入。数字来源为Base和RFT的原始评测日志。",
+  "results": [
+    {
+      "test_set": "AA全诗",
+      "model": "Base (Qwen3-8B)",
+      "total": 30,
+      "strict_accuracy": "86.67%",
+      "valid_accuracy": "89.66%",
+      "macro_f1": "89.45%",
+      "parse_fail": 1
+    },
+    {
+      "test_set": "AA全诗",
+      "model": "RFT",
+      "total": 30,
+      "strict_accuracy": "96.67%",
+      "valid_accuracy": "96.67%",
+      "macro_f1": "96.66%",
+      "parse_fail": 0
+    },
+    {
+      "test_set": "hanyuda全诗",
+      "model": "Base (Qwen3-8B)",
+      "total": 6000,
+      "strict_accuracy": "85.88%",
+      "valid_accuracy": "86.40%",
+      "macro_f1": "84.95%",
+      "parse_fail": 36
+    },
+    {
+      "test_set": "hanyuda全诗",
+      "model": "RFT",
+      "total": 6000,
+      "strict_accuracy": "87.08%",
+      "valid_accuracy": "87.21%",
+      "macro_f1": "85.95%",
+      "parse_fail": 9
+    },
+    {
+      "test_set": "unzidian全诗",
+      "model": "Base (Qwen3-8B)",
+      "total": 6000,
+      "strict_accuracy": "73.43%",
+      "valid_accuracy": "82.09%",
+      "macro_f1": "78.73%",
+      "parse_fail": 633
+    },
+    {
+      "test_set": "unzidian全诗",
+      "model": "RFT",
+      "total": 6000,
+      "strict_accuracy": "82.92%",
+      "valid_accuracy": "82.94%",
+      "macro_f1": "80.92%",
+      "parse_fail": 2
+    }
+  ],
+  "hanyuda_error_breakdown": {
+    "base_total_errors": 847,
+    "rft_total_errors": 775,
+    "both": 644,
+    "base_only_rft_fixed": 203,
+    "rft_only_rft_regression": 131,
+    "net_reduction": 72
+  },
+  "label_quality_note": "对hanyuda中644条Base和RFT共享错误样本进行了DeepSeek三次独立判断。其中582条三次结果一致，62条不一致；在三次结果一致的样本中，417条与原始标签冲突（占71.65%）。该结果提示原始测试标签中可能存在较明显的语境标注噪声。DeepSeek结果仅作为辅助分析信号，未直接替代Ground Truth，也未用于重新计算主结果。",
+  "reproducibility": "公开仓库提供可复现的数据处理、Prompt构造、Reward计算、指标计算和Bad Case分析流程。完整训练数据与模型checkpoint因授权和存储限制未公开，原始8B训练结果属于可核验结果（可通过公开的指标文件和日志摘要核验），而非仅依赖公开仓库即可完整重训的结果。"
+}

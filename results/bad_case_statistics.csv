@@ -1,0 +1,18 @@
+dataset,category,count
+hanyuda全诗,Base总错误,847
+hanyuda全诗,RFT总错误,775
+hanyuda全诗,both (双方均错),644
+hanyuda全诗,base_only (RFT修正),203
+hanyuda全诗,RFT_only (RFT退化),131
+hanyuda全诗,RFT净减少,72
+hanyuda全诗,Base Parse Fail,36
+hanyuda全诗,RFT Parse Fail,9
+hanyuda全诗,DS三次一致(582)中与原GT冲突,417
+hanyuda全诗,DS三次一致(582)中与原GT一致,165
+hanyuda全诗,DS三次不一致,62
+AA全诗,Base错误,4
+AA全诗,RFT错误,1
+AA全诗,Base Parse Fail,1
+AA全诗,RFT Parse Fail,0
+unzidian全诗,Base Parse Fail,633
+unzidian全诗,RFT Parse Fail,2

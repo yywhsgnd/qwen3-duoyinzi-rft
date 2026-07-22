@@ -1,0 +1,7 @@
+test_set,model,total_samples,valid_accuracy,strict_accuracy,macro_f1,parse_fail,correct,wrong
+AA全诗,Base (Qwen3-8B),30,0.8966,0.8667,0.8945,1,26,3
+AA全诗,RFT,30,0.9667,0.9667,0.9666,0,29,1
+hanyuda全诗,Base (Qwen3-8B),6000,0.864,0.8588,0.8495,36,5153,811
+hanyuda全诗,RFT,6000,0.8721,0.8708,0.8595,9,5225,766
+unzidian全诗,Base (Qwen3-8B),6000,0.8209,0.7343,0.7873,633,4406,961
+unzidian全诗,RFT,6000,0.8294,0.8292,0.8092,2,4975,1023
